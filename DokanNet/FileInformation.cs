@@ -50,5 +50,10 @@ namespace DokanNet
         /// Gets or sets the length of the file.
         /// </summary>
         public long Length { get; set; }
+
+        public override string ToString()
+        {
+            return $"{FileName}, {Length}, {CreationTime}, {LastWriteTime}, {LastAccessTime}, {Attributes}";
+        }
     }
 }

@@ -1,15 +1,17 @@
-﻿using System.Runtime.InteropServices;
-using System.Security.AccessControl;
+﻿using System.Security.AccessControl;
 using DokanNet;
 using Grpc.Core;
 using Grpc.Net.Client;
 using VsRemote;
 using VsRemote.Exceptions;
 using FileAccess = DokanNet.FileAccess;
+using static DokanNet.FormatProviders;
 using static VsRemote.VsRemote;
 using Google.Protobuf;
 using System.Diagnostics.CodeAnalysis;
 using DokanNet.Logging;
+using System.Globalization;
+using System.Transactions;
 
 namespace DokanVsRemoteFS;
 
@@ -27,6 +29,14 @@ internal class VsRemoteFS : IDokanOperations
     GrpcChannel channel;
     VsRemoteClient vsremote;
     private readonly ILogger log;
+
+    const long MAX_CACHE_AGE = 5000;
+    struct StatCacheEntry
+    {
+        public StatResponse? Stat;
+        public long Age;
+    }
+    private Dictionary<string, StatCacheEntry> StatCache = new();
 
     public VsRemoteFS(string uri, ILogger logger)
     {
@@ -53,11 +63,40 @@ internal class VsRemoteFS : IDokanOperations
             _ => DokanResult.InternalError,
         };
 
-    private bool FileExists(string fileName, out bool isDirectory, [NotNullWhen(true)] out VsFsEntry? fileInfo)
+    private StatResponse Stat(StatRequest statRequest)
     {
+        var curt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        if (StatCache.TryGetValue(statRequest.Path, out var cachedStat))
+            if ((curt - cachedStat.Age) < MAX_CACHE_AGE)
+                return cachedStat.Stat ?? throw new NotFound();
+        StatResponse? statResponse;
         try
         {
-            var fstat = vsremote.Stat(new StatRequest() { Path = fileName });
+            statResponse = vsremote.Stat(statRequest);
+        }
+        catch (NotFound)
+        {
+            statResponse = null;
+        }
+        cachedStat = new()
+        {
+            Age = curt,
+            Stat = statResponse
+        };
+        StatCache[statRequest.Path] = cachedStat;
+        return cachedStat.Stat ?? throw new NotFound();
+    }
+    private void UnStat(string fileName)
+        => StatCache.Remove(fileName);
+
+    private static string AdjustFilename(string fileName)
+        => fileName.Replace('\\', '/');
+    private bool FileExists(string fileName, out bool isDirectory, [NotNullWhen(true)] out VsFsEntry? fileInfo)
+    {
+        fileName = AdjustFilename(fileName);
+        try
+        {
+            var fstat = Stat(new StatRequest() { Path = fileName });
             isDirectory = fstat.FileInfo.FileType == FileType.Directory;
             fileInfo = fstat.FileInfo;
             return true;
@@ -75,6 +114,8 @@ internal class VsRemoteFS : IDokanOperations
     }
     public NtStatus CreateFile(string fileName, DokanNet.FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes, IDokanFileInfo info)
     {
+        Trace(nameof(CreateFile), fileName, info, access, share, mode, options, attributes);
+        fileName = AdjustFilename(fileName);
         StatRequest statRequest = new()
         {
             Path = fileName
@@ -82,7 +123,7 @@ internal class VsRemoteFS : IDokanOperations
         StatResponse? stat = null;
         try
         {
-            stat = vsremote.Stat(statRequest);
+            stat = Stat(statRequest);
         }
         catch (RpcException rpcex)
         {
@@ -110,7 +151,7 @@ internal class VsRemoteFS : IDokanOperations
                             return DokanResult.FileNotFound;
 
                         // test: directory access
-                        vsremote.ListDirectory(new ListDirectoryRequest() { Path = fileName });
+                        //vsremote.ListDirectory(new ListDirectoryRequest() { Path = fileName });
                         break;
 
                     case FileMode.CreateNew:
@@ -121,6 +162,7 @@ internal class VsRemoteFS : IDokanOperations
                             return DokanResult.AlreadyExists;
 
                         vsremote.CreateDirectory(new CreateDirectoryRequest() { Path = fileName });
+                        UnStat(fileName);
                         break;
                 }
             }
@@ -156,12 +198,14 @@ internal class VsRemoteFS : IDokanOperations
                         if (pathExists)
                             return DokanResult.FileExists;
                         vsremote.CreateFile(new CreateFileRequest() { Path = fileName });
+                        UnStat(fileName);
                         break;
 
                     case FileMode.Truncate:
                         if (!pathExists)
                             return DokanResult.FileNotFound;
                         vsremote.WriteFile(new WriteFileRequest() { Path = fileName, Content = Google.Protobuf.ByteString.Empty, Create = false, Overwrite = true });
+                        UnStat(fileName);
                         break;
 
                     case FileMode.Create:
@@ -191,19 +235,21 @@ internal class VsRemoteFS : IDokanOperations
         return result;
     }
 
-// ------------------------------------------------------------------------------------------------------------------------
-
     public void Cleanup(string fileName, IDokanFileInfo info)
     {
+        Trace(nameof(Cleanup), fileName, info);
+        fileName = AdjustFilename(fileName);
         if (info.DeleteOnClose)
         {
             if (info.IsDirectory)
             {
                 vsremote.RemoveDirectory(new RemoveDirectoryRequest() { Path = fileName, Recursive = false });
+                UnStat(fileName);
             }
             else
             {
                 vsremote.DeleteFile(new DeleteFileRequest() { Path = fileName });
+                UnStat(fileName);
             }
         }
     }
@@ -214,22 +260,29 @@ internal class VsRemoteFS : IDokanOperations
 
     public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset, IDokanFileInfo info)
     {
+        Trace(nameof(ReadFile), fileName, info, offset.ToString(CultureInfo.InvariantCulture));
+        fileName = AdjustFilename(fileName);
         var readfileres = vsremote.ReadFileOffset(new ReadFileOffsetRequest() { Path = fileName, Offset = Convert.ToInt32(offset), Length = buffer.Length });
         bytesRead = Math.Min(readfileres.Length, buffer.Length);
         Array.Copy(readfileres.Content.ToByteArray(), buffer, bytesRead);
+        Trace(nameof(ReadFile), fileName, info, "out " + bytesRead.ToString(), offset.ToString(CultureInfo.InvariantCulture));
         return NtStatus.Success;
     }
 
     public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset, IDokanFileInfo info)
     {
+        Trace(nameof(WriteFile), fileName, info, offset.ToString(CultureInfo.InvariantCulture), buffer.Length.ToString(CultureInfo.InvariantCulture));
+        fileName = AdjustFilename(fileName);
         var append = offset == -1;
         if (append)
         {
             vsremote.WriteFileAppend(new WriteFileAppendRequest() { Path = fileName, Content = ByteString.CopyFrom(buffer) });
+            UnStat(fileName);
         }
         else
         {
             vsremote.WriteFileOffset(new WriteFileOffsetRequest() { Path = fileName, Content = ByteString.CopyFrom(buffer), Offset = Convert.ToInt32(offset) });
+            UnStat(fileName);
         }
         bytesWritten = buffer.Length;
         return DokanResult.Success;
@@ -237,6 +290,7 @@ internal class VsRemoteFS : IDokanOperations
 
     public NtStatus FlushFileBuffers(string fileName, IDokanFileInfo info)
     {
+        fileName = AdjustFilename(fileName);
         return DokanResult.Success;
     }
 
@@ -245,7 +299,9 @@ internal class VsRemoteFS : IDokanOperations
 
     public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo, IDokanFileInfo info)
     {
-        var stat = vsremote.Stat(new StatRequest() { Path = fileName });
+        Trace("IN "+nameof(GetFileInformation), fileName, info);
+        fileName = AdjustFilename(fileName);
+        var stat = Stat(new StatRequest() { Path = fileName });
         var finfo = stat.FileInfo;
         fileInfo = new FileInformation
         {
@@ -258,6 +314,7 @@ internal class VsRemoteFS : IDokanOperations
             LastAccessTime = Unix(finfo.Atime),
             Length = finfo.Size
         };
+        Trace("OUT "+nameof(GetFileInformation), fileName, info, fileInfo.ToString());
         return DokanResult.Success;
     }
 
@@ -269,6 +326,7 @@ internal class VsRemoteFS : IDokanOperations
 
     public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
     {
+        fileName = AdjustFilename(fileName);
         var fileExists = FileExists(fileName, out bool isDirectory, out VsFsEntry? fileInfo);
         if (isDirectory)
             return DokanResult.AccessDenied;
@@ -279,9 +337,11 @@ internal class VsRemoteFS : IDokanOperations
 
     public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
     {
+        fileName = AdjustFilename(fileName);
         try
         {
             vsremote.RemoveDirectory(new RemoveDirectoryRequest() { Path = fileName, Recursive = false });
+            UnStat(fileName);
             return DokanResult.Success;
         }
         catch (RpcException rpcex)
@@ -295,12 +355,16 @@ internal class VsRemoteFS : IDokanOperations
 
     public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
     {
+        oldName = AdjustFilename(oldName);
+        newName = AdjustFilename(newName);
         var oldFileExists = FileExists(oldName, out bool oldIsDirectory, out VsFsEntry? oldFileInfo);
         var newFileExists = FileExists(oldName, out bool newIsDirectory, out VsFsEntry? newFileInfo);
 
         if (!newFileExists)
         {
             vsremote.RenameFile(new RenameFileRequest() { FromPath = oldName, ToPath = newName, Overwrite = replace });
+            UnStat(newName);
+            UnStat(oldName);
         }
         else
         {
@@ -309,6 +373,8 @@ internal class VsRemoteFS : IDokanOperations
                 if (newIsDirectory)
                     return DokanResult.AccessDenied;
                 vsremote.RenameFile(new RenameFileRequest() { FromPath = oldName, ToPath = newName, Overwrite = replace });
+                UnStat(newName);
+                UnStat(oldName);
             }
         }
 
@@ -317,6 +383,7 @@ internal class VsRemoteFS : IDokanOperations
     }
     public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
     {
+        fileName = AdjustFilename(fileName);
         if (FileExists(fileName, out bool isDirectory, out VsFsEntry? fileInfo))
         {
             if (fileInfo.Size != length)
@@ -324,6 +391,7 @@ internal class VsRemoteFS : IDokanOperations
                 byte[] file = vsremote.ReadFile(new ReadFileRequest() { Path = fileName }).ToByteArray();
                 Array.Resize(ref file, Convert.ToInt32(length));
                 vsremote.WriteFile(new WriteFileRequest() { Path = fileName, Content = ByteString.CopyFrom(file), Create = false, Overwrite = true });
+                UnStat(fileName);
             }
             return DokanResult.Success;
         }
@@ -364,6 +432,7 @@ internal class VsRemoteFS : IDokanOperations
 
     public NtStatus GetFileSecurity(string fileName, out FileSystemSecurity security, AccessControlSections sections, IDokanFileInfo info)
     {
+        fileName = AdjustFilename(fileName);
         var fileExists = FileExists(fileName, out bool isDirectory, out VsFsEntry? fileInfo);
         if (fileExists && isDirectory)
         {
@@ -418,11 +487,17 @@ internal class VsRemoteFS : IDokanOperations
                 FileName = finfo.Name
             }).ToArray();
 
+        Console.WriteLine($"FindFiles[{fileName}, {searchPattern}] => {files.Length} files: ");
+        foreach (var file in files)
+        {
+            Console.WriteLine($"  -> {file.FileName}, {file.Length} bytes, {file.Attributes}");
+        }
         return files;
     }
 
     public NtStatus FindFilesWithPattern(string fileName, string searchPattern, out IList<FileInformation> files, IDokanFileInfo info)
     {
+        fileName = AdjustFilename(fileName);
         var listdirres = vsremote.ListDirectory(new ListDirectoryRequest() { Path = fileName });
         files = FindFilesHelper(fileName, searchPattern, listdirres.Entries);
 
@@ -431,6 +506,7 @@ internal class VsRemoteFS : IDokanOperations
 
     public NtStatus FindFiles(string fileName, out IList<FileInformation> files, IDokanFileInfo info)
     {
+        fileName = AdjustFilename(fileName);
         var listdirres = vsremote.ListDirectory(new ListDirectoryRequest() { Path = fileName });
 
         // This function is not called because FindFilesWithPattern is implemented
@@ -440,4 +516,25 @@ internal class VsRemoteFS : IDokanOperations
         return DokanResult.Success;
     }
 
+    protected void Trace(string method, string fileName, IDokanFileInfo info, params object[] parameters)
+    {
+#if TRACE
+        var extraParameters = parameters != null && parameters.Length > 0
+            ? ", " + string.Join(", ", parameters.Select(x => string.Format("{0}", x)))
+            : string.Empty;
+
+        Console.WriteLine(DokanFormat($"{method}('{fileName}', {info}{extraParameters})"));
+#endif
+    }
+
+    private void Trace(string method, string fileName, IDokanFileInfo info,
+        FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes)
+    {
+#if TRACE
+        Console.WriteLine(
+            DokanFormat(
+                $"{method}('{fileName}', {info}, [{access}], [{share}], [{mode}], [{options}], [{attributes}])"));
+#endif
+
+    }
 }

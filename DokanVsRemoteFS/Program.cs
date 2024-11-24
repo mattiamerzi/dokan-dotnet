@@ -22,14 +22,15 @@ namespace DokanVsRemoteFS
 
                 var mirrorPath = arguments.ContainsKey(MirrorKey)
                    ? arguments[MirrorKey] as string
-                   : @"127.0.0.1:55555";
+                   : @"http://172.21.80.1:5229";
 
                 var mountPath = arguments.ContainsKey(MountKey)
                    ? arguments[MountKey] as string
                    : @"N:\";
 
+                var dokanLogger = new NullLogger();
                 using (var mirrorLogger = new ConsoleLogger("[Mirror] "))
-                using (var dokanLogger = new ConsoleLogger("[Dokan] "))
+                //using (var dokanLogger = new ConsoleLogger("[Dokan] "))
                 using (var dokan = new Dokan(dokanLogger))
                 {
                     var mirror = new VsRemoteFS(mirrorPath, mirrorLogger);
@@ -41,6 +42,16 @@ namespace DokanVsRemoteFS
                             options.Options = DokanOptions.DebugMode;
                             options.MountPoint = mountPath;
                         });
+                    using (var dokanInstance = dokanBuilder.Build(mirror))
+                    {
+                        Console.CancelKeyPress += (object sender, ConsoleCancelEventArgs e) =>
+                        {
+                            e.Cancel = true;
+                            dokan.RemoveMountPoint(mountPath);
+                        };
+
+                        await dokanInstance.WaitForFileSystemClosedAsync(uint.MaxValue);
+                    }
                 }
 
                 Console.WriteLine(@"Success");

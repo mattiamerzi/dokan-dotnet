@@ -22,7 +22,7 @@ namespace DokanNetMirror
 
                 var mirrorPath = arguments.ContainsKey(MirrorKey)
                    ? arguments[MirrorKey] as string
-                   : @"C:\";
+                   : @"C:\Users\";
 
                 var mountPath = arguments.ContainsKey(MountKey)
                    ? arguments[MountKey] as string
