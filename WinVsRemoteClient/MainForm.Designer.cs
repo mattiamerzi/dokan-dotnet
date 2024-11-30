@@ -34,7 +34,7 @@
             IconContextMenu = new ContextMenuStrip(components);
             ToolStripSeparator = new ToolStripSeparator();
             ConfigureSitesToolStripMenuItem = new ToolStripMenuItem();
-            exitToolStripMenuItem = new ToolStripMenuItem();
+            ExitToolStripMenuItem = new ToolStripMenuItem();
             IconContextMenu.SuspendLayout();
             SuspendLayout();
             // 
@@ -50,7 +50,7 @@
             // IconContextMenu
             // 
             IconContextMenu.ImageScalingSize = new Size(24, 24);
-            IconContextMenu.Items.AddRange(new ToolStripItem[] { ToolStripSeparator, ConfigureSitesToolStripMenuItem, exitToolStripMenuItem });
+            IconContextMenu.Items.AddRange(new ToolStripItem[] { ToolStripSeparator, ConfigureSitesToolStripMenuItem, ExitToolStripMenuItem });
             IconContextMenu.Name = "iconContextMenu";
             IconContextMenu.Size = new Size(241, 107);
             // 
@@ -66,11 +66,12 @@
             ConfigureSitesToolStripMenuItem.Text = "Configure Sites";
             ConfigureSitesToolStripMenuItem.Click += ConfigureSitesToolStripMenuItem_Click;
             // 
-            // exitToolStripMenuItem
+            // ExitToolStripMenuItem
             // 
-            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(240, 32);
-            exitToolStripMenuItem.Text = "Exit";
+            ExitToolStripMenuItem.Name = "ExitToolStripMenuItem";
+            ExitToolStripMenuItem.Size = new Size(240, 32);
+            ExitToolStripMenuItem.Text = "Exit";
+            ExitToolStripMenuItem.Click += ExitToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -90,7 +91,7 @@
         private NotifyIcon TaskbarIcon;
         private ToolStripMenuItem ConfigureSitesToolStripMenuItem;
         private ToolStripSeparator ToolStripSeparator;
-        private ToolStripMenuItem exitToolStripMenuItem;
+        private ToolStripMenuItem ExitToolStripMenuItem;
         internal ContextMenuStrip IconContextMenu;
     }
 }

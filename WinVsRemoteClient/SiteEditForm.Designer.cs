@@ -42,6 +42,8 @@
             BtnSave = new Button();
             BtnCancel = new Button();
             LblTestResult = new Label();
+            LblUnit = new Label();
+            CmbUnitLetter = new ComboBox();
             SuspendLayout();
             // 
             // LblSiteName
@@ -81,7 +83,7 @@
             // LblUsername
             // 
             LblUsername.AutoSize = true;
-            LblUsername.Location = new Point(11, 188);
+            LblUsername.Location = new Point(11, 232);
             LblUsername.Name = "LblUsername";
             LblUsername.Size = new Size(91, 25);
             LblUsername.TabIndex = 4;
@@ -89,7 +91,7 @@
             // 
             // TxtUsername
             // 
-            TxtUsername.Location = new Point(12, 216);
+            TxtUsername.Location = new Point(12, 260);
             TxtUsername.Name = "TxtUsername";
             TxtUsername.ReadOnly = true;
             TxtUsername.Size = new Size(316, 31);
@@ -98,7 +100,7 @@
             // ChkEnableAuth
             // 
             ChkEnableAuth.AutoSize = true;
-            ChkEnableAuth.Location = new Point(12, 156);
+            ChkEnableAuth.Location = new Point(12, 200);
             ChkEnableAuth.Name = "ChkEnableAuth";
             ChkEnableAuth.Size = new Size(148, 29);
             ChkEnableAuth.TabIndex = 6;
@@ -108,7 +110,7 @@
             // 
             // TxtPassword
             // 
-            TxtPassword.Location = new Point(12, 278);
+            TxtPassword.Location = new Point(12, 322);
             TxtPassword.Name = "TxtPassword";
             TxtPassword.PasswordChar = '*';
             TxtPassword.ReadOnly = true;
@@ -118,7 +120,7 @@
             // LblPassword
             // 
             LblPassword.AutoSize = true;
-            LblPassword.Location = new Point(12, 250);
+            LblPassword.Location = new Point(12, 294);
             LblPassword.Name = "LblPassword";
             LblPassword.Size = new Size(87, 25);
             LblPassword.TabIndex = 8;
@@ -126,7 +128,7 @@
             // 
             // BtnTestConnection
             // 
-            BtnTestConnection.Location = new Point(12, 315);
+            BtnTestConnection.Location = new Point(12, 359);
             BtnTestConnection.Name = "BtnTestConnection";
             BtnTestConnection.Size = new Size(148, 34);
             BtnTestConnection.TabIndex = 9;
@@ -135,7 +137,7 @@
             // 
             // BtnSave
             // 
-            BtnSave.Location = new Point(217, 373);
+            BtnSave.Location = new Point(217, 417);
             BtnSave.Name = "BtnSave";
             BtnSave.Size = new Size(112, 34);
             BtnSave.TabIndex = 10;
@@ -145,7 +147,7 @@
             // 
             // BtnCancel
             // 
-            BtnCancel.Location = new Point(99, 373);
+            BtnCancel.Location = new Point(99, 417);
             BtnCancel.Name = "BtnCancel";
             BtnCancel.Size = new Size(112, 34);
             BtnCancel.TabIndex = 11;
@@ -155,11 +157,29 @@
             // LblTestResult
             // 
             LblTestResult.AutoSize = true;
-            LblTestResult.Location = new Point(166, 320);
+            LblTestResult.Location = new Point(166, 364);
             LblTestResult.Name = "LblTestResult";
             LblTestResult.Size = new Size(145, 25);
             LblTestResult.TabIndex = 12;
             LblTestResult.Text = "-------------------";
+            // 
+            // LblUnit
+            // 
+            LblUnit.AutoSize = true;
+            LblUnit.Location = new Point(12, 133);
+            LblUnit.Name = "LblUnit";
+            LblUnit.Size = new Size(89, 25);
+            LblUnit.TabIndex = 13;
+            LblUnit.Text = "Unit letter";
+            // 
+            // CmbUnitLetter
+            // 
+            CmbUnitLetter.DropDownStyle = ComboBoxStyle.DropDownList;
+            CmbUnitLetter.FormattingEnabled = true;
+            CmbUnitLetter.Location = new Point(12, 161);
+            CmbUnitLetter.Name = "CmbUnitLetter";
+            CmbUnitLetter.Size = new Size(90, 33);
+            CmbUnitLetter.TabIndex = 14;
             // 
             // SiteEditForm
             // 
@@ -167,7 +187,9 @@
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnCancel;
-            ClientSize = new Size(347, 421);
+            ClientSize = new Size(347, 534);
+            Controls.Add(CmbUnitLetter);
+            Controls.Add(LblUnit);
             Controls.Add(LblTestResult);
             Controls.Add(BtnCancel);
             Controls.Add(BtnSave);
@@ -188,6 +210,7 @@
             Name = "SiteEditForm";
             ShowInTaskbar = false;
             Text = "Edit Site";
+            Shown += SiteEditForm_Shown;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -207,5 +230,7 @@
         private Button BtnSave;
         private Button BtnCancel;
         private Label LblTestResult;
+        private Label LblUnit;
+        private ComboBox CmbUnitLetter;
     }
 }

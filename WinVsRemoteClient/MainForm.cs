@@ -26,7 +26,7 @@ public partial class MainForm : Form
         IconContextMenu.SuspendLayout();
         IconContextMenu.Items.Clear();
         IconContextMenu.Items.AddRange(aRoots);
-        IconContextMenu.Items.AddRange([ToolStripSeparator, ConfigureSitesToolStripMenuItem, exitToolStripMenuItem]);
+        IconContextMenu.Items.AddRange([ToolStripSeparator, ConfigureSitesToolStripMenuItem, ExitToolStripMenuItem]);
         IconContextMenu.ResumeLayout();
     }
 
@@ -46,5 +46,10 @@ public partial class MainForm : Form
             DrawTree(folder, node);
             parent.DropDownItems.Add(node);
         }
+    }
+
+    private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        Application.Exit();
     }
 }

@@ -53,4 +53,15 @@ internal partial class SiteEditForm : Form
 
     private void ChkEnableAuth_CheckedChanged(object sender, EventArgs e)
         => TxtUsername.ReadOnly = TxtPassword.ReadOnly = !ChkEnableAuth.Checked;
+
+    private void SiteEditForm_Shown(object sender, EventArgs e)
+    {
+        CmbUnitLetter.SuspendLayout();
+        CmbUnitLetter.Items.Clear();
+        for (var c = 'F'; c <= 'Z'; c++)
+        {
+            CmbUnitLetter.Items.Add($"{c}:\\".ToString());
+        }
+        CmbUnitLetter.ResumeLayout();
+    }
 }

@@ -1,10 +1,12 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace WinVsRemoteClient;
 
 internal class ConfigSite
 {
     public ConfigSite() { }
+    [JsonIgnore]
     public Guid Id { get; } = Guid.NewGuid();
     public required string Label { get; set; }
     public required string Address { get; set; }
@@ -15,11 +17,13 @@ internal class ConfigSite
 
 internal class ConfigFolder
 {
+    [JsonIgnore]
     public Guid Id { get; } = Guid.NewGuid();
     public string Label { get; set; } = string.Empty;
     public IEnumerable<ConfigFolder> Folders { get; set; } = Enumerable.Empty<ConfigFolder>();
     public IEnumerable<ConfigSite> Sites { get; set; } = Enumerable.Empty<ConfigSite>();
 
+    [JsonIgnore]
     public bool Empty
         => (Folders == null || !Folders.Any()) && (Sites == null || !Sites.Any());
 
@@ -59,6 +63,10 @@ internal class ConfigFolder
 internal static class TreeFactory
 {
     private const string SitesConfigFile = "vsremote.json";
+    private static JsonSerializerOptions serializerOptions = new JsonSerializerOptions()
+    {
+        WriteIndented = true
+    };
 
     public static ConfigFolder ReadSitesConfiguration()
     {
@@ -77,7 +85,7 @@ internal static class TreeFactory
 
     internal static void SaveSitesConfiguration(ConfigFolder sitesConfig)
     {
-        var jsontxt = JsonSerializer.Serialize(sitesConfig);
+        var jsontxt = JsonSerializer.Serialize(sitesConfig, serializerOptions);
         File.WriteAllText(SitesConfigFile, jsontxt);
     }
 }
