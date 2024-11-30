@@ -1,0 +1,53 @@
+﻿{
+  "Folders": [
+    {
+      "Id": "cb6a7e9b-bcd8-47f1-841c-8b2d305b3f3f",
+      "Label": "SubFolder1",
+      "Folders": [],
+      "Sites": [
+        {
+          "Id": "b9187f50-7896-456b-a9a2-eeb34cfcb9e2",
+          "Label": "Site1",
+          "Address": "http://example.com",
+          "Port": 8080,
+          "Username": "user1",
+          "Password": "pass1"
+        },
+        {
+          "Id": "4d59d3ef-6b37-4f26-8263-95df6ef0d49d",
+          "Label": "Site2",
+          "Address": "http://example.org",
+          "Port": 9099
+        }
+      ]
+    },
+    {
+      "Id": "7d0f405b-3b7e-4a8b-9887-f93f92dc3562",
+      "Label": "SubFolder2",
+      "Folders": [
+        {
+          "Id": "84a6b5d2-e7c2-4622-8b3e-cdf05a0f15ee",
+          "Label": "NestedFolder",
+          "Folders": [],
+          "Sites": [
+            {
+              "Id": "b62d5e34-f273-4ad8-8041-4e91f237e62b",
+              "Label": "NestedSite",
+              "Address": "http://nested.example.net",
+              "Port": 7070
+            }
+          ]
+        }
+      ],
+      "Sites": []
+    }
+  ],
+  "Sites": [
+    {
+      "Id": "b74cc2c3-f1b8-4324-a93a-5e0a58c6ae6e",
+      "Label": "RootSite",
+      "Address": "http://root.example.com",
+      "Port": 9099
+    }
+  ]
+}
