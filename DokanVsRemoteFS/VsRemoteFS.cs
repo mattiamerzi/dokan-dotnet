@@ -65,6 +65,7 @@ internal class VsRemoteFS : IDokanOperations
 
     private StatResponse Stat(StatRequest statRequest)
     {
+        //return vsremote.Stat(statRequest);
         var curt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         if (StatCache.TryGetValue(statRequest.Path, out var cachedStat))
             if ((curt - cachedStat.Age) < MAX_CACHE_AGE)
@@ -202,21 +203,30 @@ internal class VsRemoteFS : IDokanOperations
                         break;
 
                     case FileMode.Truncate:
-                        if (!pathExists)
-                            return DokanResult.FileNotFound;
                         vsremote.WriteFile(new WriteFileRequest() { Path = fileName, Content = Google.Protobuf.ByteString.Empty, Create = false, Overwrite = true });
                         UnStat(fileName);
+                        if (!pathExists)
+                            return DokanResult.FileNotFound;
                         break;
 
                     case FileMode.Create:
                     case FileMode.OpenOrCreate:
                         if (pathExists)
                             return DokanResult.AlreadyExists;
+                        else
+                        {
+                            vsremote.CreateFile(new CreateFileRequest() { Path = fileName });
+                            UnStat(fileName);
+                        }
                         break;
 
                     case FileMode.Append:
                         if (!pathExists)
+                        {
+                            vsremote.CreateFile(new CreateFileRequest() { Path = fileName });
+                            UnStat(fileName);
                             return DokanResult.FileNotFound;
+                        }
                         break;
                 }
             }
