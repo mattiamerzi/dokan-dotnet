@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using DokanNet;
+using DokanNet.Logging;
 using DokanVsRemoteFS;
 
 namespace WinVsRemoteClient;
@@ -11,11 +12,10 @@ internal class VsRemoteFSManager : IDisposable
     private readonly ConcurrentDictionary<ConfigSite, DokanInstance> _dokanInstances;
     private readonly ConcurrentDictionary<ConfigSite, DynaLogger> _dokanLoggers;
     private bool _disposed;
-    private readonly DynaLogger dokanLogger = new();
 
     public VsRemoteFSManager()
     {
-        _dokan = new Dokan(dokanLogger);
+        _dokan = new Dokan(new NullLogger());
         _mountThreads = new ConcurrentDictionary<ConfigSite, Thread>();
         _dokanInstances = new ConcurrentDictionary<ConfigSite, DokanInstance>();
         _dokanLoggers = new ConcurrentDictionary<ConfigSite, DynaLogger>();
@@ -33,8 +33,15 @@ internal class VsRemoteFSManager : IDisposable
             DokanInstance? dokanInstance = null;
             try
             {
-                var fs = new VsRemoteFS(site.MountPoint, dynaLogger);
-                var dokanBuilder = new DokanInstanceBuilder(_dokan);
+                var fs = new VsRemoteFS(site.Address, dynaLogger);
+                var dokanBuilder = new DokanInstanceBuilder(_dokan)
+                    .ConfigureLogger(() => dokanLogger)
+                    .ConfigureOptions(options =>
+                    {
+                        options.Options = DokanOptions.RemovableDrive;
+                        options.MountPoint = site.MountPoint;
+                    });
+
                 dokanInstance = dokanBuilder.Build(fs);
 
                 if (_dokanInstances.TryAdd(site, dokanInstance))

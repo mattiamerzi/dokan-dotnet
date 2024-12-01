@@ -54,7 +54,8 @@ public partial class MainForm : Form
         {
             if (menuItem.Tag is ConfigSite site)
             {
-                dokanManager.MountVsRemoteFS(site);
+                //dokanManager.MountVsRemoteFS(site);
+                new SiteRunnerForm().Show();
             }
         }
     }

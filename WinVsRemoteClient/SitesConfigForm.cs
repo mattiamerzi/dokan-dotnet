@@ -144,6 +144,22 @@ internal partial class SitesConfigForm : Form
 
     private void SitesTreeview_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
     {
-        DrawTreeAndSaveConfig();
+        if (e.Label != null)
+        {
+            var node = SitesTreeview.SelectedNode;
+            if (node != null)
+            {
+                if (node.Tag is ConfigFolder folder && folder.Label != e.Label)
+                {
+                    folder.Label = e.Label;
+                    TreeFactory.SaveSitesConfiguration(sitesConfig);
+                }
+                if (node.Tag is ConfigSite site && site.Label != e.Label)
+                {
+                    site.Label = e.Label;
+                    TreeFactory.SaveSitesConfiguration(sitesConfig);
+                }
+            }
+        }
     }
 }

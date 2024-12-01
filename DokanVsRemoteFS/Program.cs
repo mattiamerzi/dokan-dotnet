@@ -22,7 +22,7 @@ namespace DokanVsRemoteFS
 
                 var mirrorPath = arguments.ContainsKey(MirrorKey)
                    ? arguments[MirrorKey] as string
-                   : @"http://172.21.80.1:5229";
+                   : @"http://172.24.208.1:5229";
 
                 var mountPath = arguments.ContainsKey(MountKey)
                    ? arguments[MountKey] as string
@@ -39,7 +39,7 @@ namespace DokanVsRemoteFS
                         .ConfigureLogger(() => dokanLogger)
                         .ConfigureOptions(options =>
                         {
-                            options.Options = DokanOptions.DebugMode;
+                            options.Options = DokanOptions.DebugMode | DokanOptions.RemovableDrive;
                             options.MountPoint = mountPath;
                         });
                     using (var dokanInstance = dokanBuilder.Build(mirror))
