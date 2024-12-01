@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{6AF2183D-1D93-414C-8FAC-C97E60078F4C}"
 EndProject
@@ -41,6 +41,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokanVsRemoteFS", "DokanVsRemoteFS\DokanVsRemoteFS.csproj", "{3D761182-5378-4E21-BF64-7E704408D1E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VsRemote", "..\..\..\..\..\..\workspace\vs.remote\backend\VsRemote\VsRemote.csproj", "{8A6B181C-599A-455B-8198-6D15BDAB8AE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinVsRemoteClient", "WinVsRemoteClient\WinVsRemoteClient.csproj", "{99D4A016-0E23-4BB0-BABD-059873AC6598}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -124,6 +126,18 @@ Global
 		{8A6B181C-599A-455B-8198-6D15BDAB8AE8}.Release|x64.Build.0 = Release|Any CPU
 		{8A6B181C-599A-455B-8198-6D15BDAB8AE8}.Release|x86.ActiveCfg = Release|Any CPU
 		{8A6B181C-599A-455B-8198-6D15BDAB8AE8}.Release|x86.Build.0 = Release|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Debug|x64.Build.0 = Debug|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Debug|x86.Build.0 = Debug|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Release|x64.ActiveCfg = Release|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Release|x64.Build.0 = Release|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Release|x86.ActiveCfg = Release|Any CPU
+		{99D4A016-0E23-4BB0-BABD-059873AC6598}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

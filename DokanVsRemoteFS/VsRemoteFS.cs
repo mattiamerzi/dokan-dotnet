@@ -15,7 +15,7 @@ using System.Transactions;
 
 namespace DokanVsRemoteFS;
 
-internal class VsRemoteFS : IDokanOperations
+public class VsRemoteFS : IDokanOperations
 {
     private const FileAccess DataAccess = FileAccess.ReadData | FileAccess.WriteData | FileAccess.AppendData |
                                           FileAccess.Execute |
@@ -36,13 +36,19 @@ internal class VsRemoteFS : IDokanOperations
         public StatResponse? Stat;
         public long Age;
     }
-    private Dictionary<string, StatCacheEntry> StatCache = new();
+    private readonly Dictionary<string, StatCacheEntry> StatCache = new();
 
     public VsRemoteFS(string uri, ILogger logger)
     {
         log = logger;
         channel = GrpcChannel.ForAddress(uri);
         vsremote = new VsRemoteClient(channel);
+    }
+    public VsRemoteFS(string uri, string username, string password, ILogger logger)
+    {
+        log = logger;
+        channel = GrpcChannel.ForAddress(uri);
+        vsremote = new VsRemoteAuthenticatedClient(channel, username, password);
     }
 
     private static NtStatus DecodeNtStatus(RpcException rpcex)

@@ -1,0 +1,49 @@
+﻿{
+  "Folders": [
+    {
+      "Label": "SubFolder1",
+      "Folders": [],
+      "Sites": [
+        {
+          "Label": "Site1",
+          "Address": "http://example.com",
+          "Port": 8080,
+          "Username": "user1",
+          "Password": "pass1",
+          "MountPoint": "X:\\"
+        },
+        {
+          "Label": "Site2",
+          "Address": "http://example.org",
+          "Port": 9099,
+          "MountPoint": "Y:\\"
+        }
+      ]
+    },
+    {
+      "Label": "SubFolder2",
+      "Folders": [
+        {
+          "Label": "NestedFolder",
+          "Folders": [],
+          "Sites": [
+            {
+              "Label": "NestedSite",
+              "Address": "http://nested.example.net",
+              "Port": 7070,
+              "MountPoint": "Z:\\"
+            }
+          ]
+        }
+      ],
+      "Sites": []
+    }
+  ],
+  "Sites": [
+    {
+      "Label": "RootSite",
+      "Address": "http://root.example.com",
+      "Port": 9099
+    }
+  ]
+}
