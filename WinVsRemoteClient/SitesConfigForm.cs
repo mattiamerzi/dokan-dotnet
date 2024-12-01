@@ -133,7 +133,7 @@ internal partial class SitesConfigForm : Form
 
         SiteEditForm siteEditForm = new();
         var res = siteEditForm.ShowDialog();
-        if (res == DialogResult.OK)
+        if (res == DialogResult.OK && siteEditForm.ConfigSite != null)
         {
             folder.Sites = folder.Sites.Concat([siteEditForm.ConfigSite]);
         }

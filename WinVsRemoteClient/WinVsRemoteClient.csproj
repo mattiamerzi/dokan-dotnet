@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DokanVsRemoteFS\DokanVsRemoteFS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="vsremote.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

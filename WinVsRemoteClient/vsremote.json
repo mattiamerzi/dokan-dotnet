@@ -9,12 +9,14 @@
           "Address": "http://example.com",
           "Port": 8080,
           "Username": "user1",
-          "Password": "pass1"
+          "Password": "pass1",
+          "MountPoint": "X:\\"
         },
         {
           "Label": "Site2",
           "Address": "http://example.org",
-          "Port": 9099
+          "Port": 9099,
+          "MountPoint": "Y:\\"
         }
       ]
     },
@@ -28,7 +30,8 @@
             {
               "Label": "NestedSite",
               "Address": "http://nested.example.net",
-              "Port": 7070
+              "Port": 7070,
+              "MountPoint": "Z:\\"
             }
           ]
         }

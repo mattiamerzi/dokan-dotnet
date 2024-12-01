@@ -44,6 +44,12 @@
             LblTestResult = new Label();
             LblUnit = new Label();
             CmbUnitLetter = new ComboBox();
+            RbMountPointUnit = new RadioButton();
+            RbMountPointFolder = new RadioButton();
+            BtnMountPointBrowse = new Button();
+            panel1 = new Panel();
+            LblMountPoint = new Label();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // LblSiteName
@@ -83,7 +89,7 @@
             // LblUsername
             // 
             LblUsername.AutoSize = true;
-            LblUsername.Location = new Point(11, 232);
+            LblUsername.Location = new Point(11, 336);
             LblUsername.Name = "LblUsername";
             LblUsername.Size = new Size(91, 25);
             LblUsername.TabIndex = 4;
@@ -91,7 +97,7 @@
             // 
             // TxtUsername
             // 
-            TxtUsername.Location = new Point(12, 260);
+            TxtUsername.Location = new Point(12, 364);
             TxtUsername.Name = "TxtUsername";
             TxtUsername.ReadOnly = true;
             TxtUsername.Size = new Size(316, 31);
@@ -100,7 +106,7 @@
             // ChkEnableAuth
             // 
             ChkEnableAuth.AutoSize = true;
-            ChkEnableAuth.Location = new Point(12, 200);
+            ChkEnableAuth.Location = new Point(12, 304);
             ChkEnableAuth.Name = "ChkEnableAuth";
             ChkEnableAuth.Size = new Size(148, 29);
             ChkEnableAuth.TabIndex = 6;
@@ -110,7 +116,7 @@
             // 
             // TxtPassword
             // 
-            TxtPassword.Location = new Point(12, 322);
+            TxtPassword.Location = new Point(12, 426);
             TxtPassword.Name = "TxtPassword";
             TxtPassword.PasswordChar = '*';
             TxtPassword.ReadOnly = true;
@@ -120,7 +126,7 @@
             // LblPassword
             // 
             LblPassword.AutoSize = true;
-            LblPassword.Location = new Point(12, 294);
+            LblPassword.Location = new Point(12, 398);
             LblPassword.Name = "LblPassword";
             LblPassword.Size = new Size(87, 25);
             LblPassword.TabIndex = 8;
@@ -128,7 +134,7 @@
             // 
             // BtnTestConnection
             // 
-            BtnTestConnection.Location = new Point(12, 359);
+            BtnTestConnection.Location = new Point(12, 463);
             BtnTestConnection.Name = "BtnTestConnection";
             BtnTestConnection.Size = new Size(148, 34);
             BtnTestConnection.TabIndex = 9;
@@ -137,7 +143,7 @@
             // 
             // BtnSave
             // 
-            BtnSave.Location = new Point(217, 417);
+            BtnSave.Location = new Point(217, 521);
             BtnSave.Name = "BtnSave";
             BtnSave.Size = new Size(112, 34);
             BtnSave.TabIndex = 10;
@@ -147,7 +153,7 @@
             // 
             // BtnCancel
             // 
-            BtnCancel.Location = new Point(99, 417);
+            BtnCancel.Location = new Point(99, 521);
             BtnCancel.Name = "BtnCancel";
             BtnCancel.Size = new Size(112, 34);
             BtnCancel.TabIndex = 11;
@@ -157,7 +163,7 @@
             // LblTestResult
             // 
             LblTestResult.AutoSize = true;
-            LblTestResult.Location = new Point(166, 364);
+            LblTestResult.Location = new Point(166, 468);
             LblTestResult.Name = "LblTestResult";
             LblTestResult.Size = new Size(145, 25);
             LblTestResult.TabIndex = 12;
@@ -168,18 +174,74 @@
             LblUnit.AutoSize = true;
             LblUnit.Location = new Point(12, 133);
             LblUnit.Name = "LblUnit";
-            LblUnit.Size = new Size(89, 25);
+            LblUnit.Size = new Size(110, 25);
             LblUnit.TabIndex = 13;
-            LblUnit.Text = "Unit letter";
+            LblUnit.Text = "Mount Point";
             // 
             // CmbUnitLetter
             // 
             CmbUnitLetter.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbUnitLetter.FormattingEnabled = true;
-            CmbUnitLetter.Location = new Point(12, 161);
+            CmbUnitLetter.Location = new Point(87, 3);
             CmbUnitLetter.Name = "CmbUnitLetter";
             CmbUnitLetter.Size = new Size(90, 33);
             CmbUnitLetter.TabIndex = 14;
+            CmbUnitLetter.SelectedIndexChanged += CmbUnitLetter_SelectedIndexChanged;
+            // 
+            // RbMountPointUnit
+            // 
+            RbMountPointUnit.AutoSize = true;
+            RbMountPointUnit.Checked = true;
+            RbMountPointUnit.Location = new Point(8, 7);
+            RbMountPointUnit.Name = "RbMountPointUnit";
+            RbMountPointUnit.Size = new Size(69, 29);
+            RbMountPointUnit.TabIndex = 15;
+            RbMountPointUnit.TabStop = true;
+            RbMountPointUnit.Text = "Unit";
+            RbMountPointUnit.UseVisualStyleBackColor = true;
+            RbMountPointUnit.CheckedChanged += RbMountPoint_CheckedChanged;
+            // 
+            // RbMountPointFolder
+            // 
+            RbMountPointFolder.AutoSize = true;
+            RbMountPointFolder.Location = new Point(8, 55);
+            RbMountPointFolder.Name = "RbMountPointFolder";
+            RbMountPointFolder.Size = new Size(109, 29);
+            RbMountPointFolder.TabIndex = 16;
+            RbMountPointFolder.Text = "Directory";
+            RbMountPointFolder.UseVisualStyleBackColor = true;
+            RbMountPointFolder.CheckedChanged += RbMountPoint_CheckedChanged;
+            // 
+            // BtnMountPointBrowse
+            // 
+            BtnMountPointBrowse.Location = new Point(123, 52);
+            BtnMountPointBrowse.Name = "BtnMountPointBrowse";
+            BtnMountPointBrowse.Size = new Size(112, 34);
+            BtnMountPointBrowse.TabIndex = 17;
+            BtnMountPointBrowse.Text = "Browse...";
+            BtnMountPointBrowse.UseVisualStyleBackColor = true;
+            BtnMountPointBrowse.Click += BtnMountPointBrowse_Click;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(LblMountPoint);
+            panel1.Controls.Add(RbMountPointUnit);
+            panel1.Controls.Add(BtnMountPointBrowse);
+            panel1.Controls.Add(RbMountPointFolder);
+            panel1.Controls.Add(CmbUnitLetter);
+            panel1.Location = new Point(12, 161);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(300, 137);
+            panel1.TabIndex = 18;
+            // 
+            // LblMountPoint
+            // 
+            LblMountPoint.AutoSize = true;
+            LblMountPoint.Location = new Point(8, 101);
+            LblMountPoint.Name = "LblMountPoint";
+            LblMountPoint.Size = new Size(32, 25);
+            LblMountPoint.TabIndex = 18;
+            LblMountPoint.Text = "F:\\";
             // 
             // SiteEditForm
             // 
@@ -187,8 +249,8 @@
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnCancel;
-            ClientSize = new Size(347, 534);
-            Controls.Add(CmbUnitLetter);
+            ClientSize = new Size(347, 570);
+            Controls.Add(panel1);
             Controls.Add(LblUnit);
             Controls.Add(LblTestResult);
             Controls.Add(BtnCancel);
@@ -211,6 +273,8 @@
             ShowInTaskbar = false;
             Text = "Edit Site";
             Shown += SiteEditForm_Shown;
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -232,5 +296,10 @@
         private Label LblTestResult;
         private Label LblUnit;
         private ComboBox CmbUnitLetter;
+        private RadioButton RbMountPointUnit;
+        private RadioButton RbMountPointFolder;
+        private Button BtnMountPointBrowse;
+        private Panel panel1;
+        private Label LblMountPoint;
     }
 }

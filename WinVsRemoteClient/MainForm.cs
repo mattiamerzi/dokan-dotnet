@@ -2,6 +2,7 @@ namespace WinVsRemoteClient;
 
 public partial class MainForm : Form
 {
+    private readonly VsRemoteFSManager dokanManager = new();
     private readonly ConfigFolder sitesConfig;
     public MainForm()
     {
@@ -35,16 +36,26 @@ public partial class MainForm : Form
         ToolStripMenuItem node;
         foreach (var site in configFolder.Sites)
         {
-            node = new(site.Label);
-            node.Tag = site;
+            node = new(site.Label) { Tag = site };
+            node.Click += Site_Click;
             parent.DropDownItems.Add(node);
         }
         foreach (var folder in configFolder.Folders)
         {
-            node = new(folder.Label);
-            node.Tag = folder;
+            node = new(folder.Label) { Tag = folder };
             DrawTree(folder, node);
             parent.DropDownItems.Add(node);
+        }
+    }
+
+    private void Site_Click(object? sender, EventArgs e)
+    {
+        if (sender is ToolStripMenuItem menuItem)
+        {
+            if (menuItem.Tag is ConfigSite site)
+            {
+                dokanManager.MountVsRemoteFS(site);
+            }
         }
     }
 

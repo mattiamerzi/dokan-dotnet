@@ -13,6 +13,7 @@ internal class ConfigSite
     public int Port { get; set; } = 9099;
     public string? Username { get; set; }
     public string? Password { get; set; }
+    public string MountPoint { get; set; }
 }
 
 internal class ConfigFolder

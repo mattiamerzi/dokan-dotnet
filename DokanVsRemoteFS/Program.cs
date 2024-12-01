@@ -17,7 +17,7 @@ namespace DokanVsRemoteFS
             try
             {
                 var arguments = args
-                   .Select(x => x.Split(new char[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries))
+                   .Select(x => x.Split([ '=' ], 2, StringSplitOptions.RemoveEmptyEntries))
                    .ToDictionary(x => x[0], x => x.Length > 1 ? x[1] as object : true, StringComparer.OrdinalIgnoreCase);
 
                 var mirrorPath = arguments.ContainsKey(MirrorKey)
