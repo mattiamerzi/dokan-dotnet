@@ -534,23 +534,21 @@ public class VsRemoteFS : IDokanOperations
 
     protected void Trace(string method, string fileName, IDokanFileInfo info, params object[] parameters)
     {
-#if TRACE
-        var extraParameters = parameters != null && parameters.Length > 0
-            ? ", " + string.Join(", ", parameters.Select(x => string.Format("{0}", x)))
-            : string.Empty;
+        if (log.DebugEnabled) {
+            var extraParameters = parameters != null && parameters.Length > 0
+                ? ", " + string.Join(", ", parameters.Select(x => string.Format("{0}", x)))
+                : string.Empty;
 
-        Console.WriteLine(DokanFormat($"{method}('{fileName}', {info}{extraParameters})"));
-#endif
+            log.Debug(DokanFormat($"{method}('{fileName}', {info}{extraParameters})"));
+        }
     }
 
     private void Trace(string method, string fileName, IDokanFileInfo info,
         FileAccess access, FileShare share, FileMode mode, FileOptions options, FileAttributes attributes)
     {
-#if TRACE
-        Console.WriteLine(
-            DokanFormat(
-                $"{method}('{fileName}', {info}, [{access}], [{share}], [{mode}], [{options}], [{attributes}])"));
-#endif
-
+        if (log.DebugEnabled)
+        {
+            log.Debug(DokanFormat($"{method}('{fileName}', {info}, [{access}], [{share}], [{mode}], [{options}], [{attributes}])"));
+        }
     }
 }

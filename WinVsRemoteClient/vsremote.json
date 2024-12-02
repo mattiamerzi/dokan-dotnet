@@ -5,17 +5,13 @@
       "Folders": [],
       "Sites": [
         {
-          "Label": "Site1",
-          "Address": "http://example.com",
-          "Port": 8080,
-          "Username": "user1",
-          "Password": "pass1",
+          "Label": "Test Environment",
+          "Address": "http://172.17.0.1:5229",
           "MountPoint": "X:\\"
         },
         {
           "Label": "Site2",
           "Address": "http://example.org",
-          "Port": 9099,
           "MountPoint": "Y:\\"
         }
       ]
@@ -30,7 +26,6 @@
             {
               "Label": "NestedSite",
               "Address": "http://nested.example.net",
-              "Port": 7070,
               "MountPoint": "Z:\\"
             }
           ]
@@ -42,8 +37,7 @@
   "Sites": [
     {
       "Label": "RootSite",
-      "Address": "http://root.example.com",
-      "Port": 9099
+      "Address": "http://root.example.com"
     }
   ]
 }

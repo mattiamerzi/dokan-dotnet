@@ -2,7 +2,7 @@ namespace WinVsRemoteClient;
 
 public partial class MainForm : Form
 {
-    private readonly VsRemoteFSManager dokanManager = new();
+    private readonly VsRemoteFSManager fsManager = new();
     private readonly ConfigFolder sitesConfig;
     public MainForm()
     {
@@ -55,7 +55,7 @@ public partial class MainForm : Form
             if (menuItem.Tag is ConfigSite site)
             {
                 //dokanManager.MountVsRemoteFS(site);
-                new SiteRunnerForm().Show();
+                new SiteRunnerForm(fsManager, site).Show();
             }
         }
     }

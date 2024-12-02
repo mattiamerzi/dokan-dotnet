@@ -22,7 +22,7 @@ namespace DokanVsRemoteFS
 
                 var mirrorPath = arguments.ContainsKey(MirrorKey)
                    ? arguments[MirrorKey] as string
-                   : @"http://172.24.208.1:5229";
+                   : @"http://172.17.0.1:5229";
 
                 var mountPath = arguments.ContainsKey(MountKey)
                    ? arguments[MountKey] as string

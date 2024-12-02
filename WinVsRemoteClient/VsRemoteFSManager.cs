@@ -35,7 +35,7 @@ internal class VsRemoteFSManager : IDisposable
             {
                 var fs = new VsRemoteFS(site.Address, dynaLogger);
                 var dokanBuilder = new DokanInstanceBuilder(_dokan)
-                    .ConfigureLogger(() => dokanLogger)
+                    .ConfigureLogger(() => new NullLogger())
                     .ConfigureOptions(options =>
                     {
                         options.Options = DokanOptions.RemovableDrive;
@@ -89,7 +89,7 @@ internal class VsRemoteFSManager : IDisposable
         {
             try
             {
-                _dokan.RemoveMountPoint(site.Label);
+                _dokan.RemoveMountPoint(site.MountPoint);
             }
             catch (Exception ex)
             {

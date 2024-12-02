@@ -5,7 +5,7 @@ namespace WinVsRemoteClient;
 
 internal class DynaLogger : ILogger
 {
-    public bool DebugEnabled => false;
+    public bool DebugEnabled { get; set; } = true;
     public bool ErrorEnabled { get; set; } = false;
     public bool FatalEnabled { get; set; } = false;
     public bool InfoEnabled { get; set; } = false;
@@ -24,13 +24,8 @@ internal class DynaLogger : ILogger
             return [];
     }
 
-    public void Debug(string message, params object[] args)
-    {
-    }
-
     private void Enqueue(LogLevel level, string message)
     {
-        Console.WriteLine(message);
         if (messages.Count > 100)
             messages.TryDequeue(out var _);
         messages.Enqueue(new(level, $"[{DateTime.Now:HH:mm:ss} [{DecodeLevel()}] {message}"));
@@ -38,6 +33,7 @@ internal class DynaLogger : ILogger
         string DecodeLevel()
             => level switch
             {
+                LogLevel.DEBUG => "DBG",
                 LogLevel.ERROR => "ERR",
                 LogLevel.FATAL => "!!!",
                 LogLevel.WARN => "WRN",
@@ -45,6 +41,9 @@ internal class DynaLogger : ILogger
                 _ => string.Empty
             };
     }
+
+    public void Debug(string message, params object[] args)
+        => Enqueue(LogLevel.DEBUG, message);
 
     public void Error(string message, params object[] args)
         => Enqueue(LogLevel.ERROR, string.Format(message, args));
@@ -61,6 +60,6 @@ internal class DynaLogger : ILogger
 }
 internal enum LogLevel
 {
-    ERROR, FATAL, INFO, WARN
+    ERROR, FATAL, INFO, WARN, DEBUG
 }
 internal record struct LogLine(LogLevel LogLevel, string Log);
